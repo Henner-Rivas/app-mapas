@@ -1,10 +1,13 @@
 import React from "react";
-import { PlacesProvider } from "./context";
+import { MapsProvider, PlacesProvider } from "./context";
+import { Home } from "./pages";
 
 const MapApp = () => {
   return (
     <PlacesProvider>
-      <h1>dd</h1>
+      <MapsProvider>
+        <Home />
+      </MapsProvider>
     </PlacesProvider>
   );
 };
