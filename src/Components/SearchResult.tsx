@@ -6,9 +6,17 @@ import { MapsContext } from "../context/maps/MapsContext";
 import { Feature } from "../interfaces/Places";
 
 export const SearchResult = () => {
-  const { Places, isLoadingPlaces } = useContext(PlacesContext);
-  const { map } = useContext(MapsContext);
+  const { Places, isLoadingPlaces, userLocation } = useContext(PlacesContext);
+  const { map, getRouteBetweenPoints } = useContext(MapsContext);
   const [active, setActive] = useState("d");
+  const getRoute = (place: Feature) => {
+    if (!userLocation) {
+      return;
+    }
+    const [lng, lat] = place.center;
+
+    getRouteBetweenPoints(userLocation, [lng, lat]);
+  };
 
   if (Places.length === 0) {
     return <></>;
@@ -43,6 +51,7 @@ export const SearchResult = () => {
                 ? " btn-outline-light"
                 : " btn-outline-primary"
             }`}
+            onClick={() => getRoute(place)}
           >
             Direcciones
           </button>

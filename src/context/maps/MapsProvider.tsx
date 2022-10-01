@@ -1,8 +1,13 @@
-import { Map, Marker, Popup } from "mapbox-gl";
+/* eslint-disable import/no-webpack-loader-syntax */
+
+//@ts-ignore
+import { AnySourceData, LngLatBounds, Map, Marker, Popup } from "!mapbox-gl";
 import { MapsContext } from "./MapsContext";
 import { useReducer, useContext, useEffect } from "react";
 import { MapsReducer } from "./MapsReducer";
 import { PlacesContext } from "../places/PlacesContext";
+import { directionApi } from "../../apis";
+import { DirecctionResponse } from "../../interfaces/Direction";
 export interface MapState {
   isMapReady: boolean;
   map?: Map;
@@ -38,7 +43,7 @@ export const MapsProvider = ({ children }: Props) => {
     }
 
     dispatch({ type: "setMarkers", payload: newMarkers });
-  }, [Places, state.map, state.markers]);
+  }, [Places]);
   const setMap = (map: Map) => {
     const myLocationPopup = new Popup().setHTML(`
       <h4>Aqui estoy</h4>
@@ -54,7 +59,67 @@ export const MapsProvider = ({ children }: Props) => {
   const getRouteBetweenPoints = async (
     start: [number, number],
     end: [number, number]
-  ) => {};
+  ) => {
+    const resp = await directionApi.get<DirecctionResponse>(
+      `/${start.join(",")};${end.join(",")}`
+    );
+    const { distance, duration, geometry } = resp.data.routes[0];
+    const { coordinates: coords } = geometry;
+    let kms = distance / 1000;
+    kms = Math.round(kms * 100);
+    kms = kms / 100;
+    const minutes = Math.floor(duration / 60);
+    console.log({ kms, minutes });
+
+    const bounds = new LngLatBounds(start, end);
+    for (const coord of coords) {
+      const newCord: [number, number] = [coord[0], coord[0]];
+      bounds.extend(newCord);
+    }
+    state.map?.fitBounds(bounds, {
+      padding: 200,
+    });
+    // polyline
+
+    const sourceDate: AnySourceData = {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "LineString",
+              coordinates: coords,
+            },
+          },
+        ],
+      },
+    };
+
+    /// todo remover poyline si existe
+
+    if (state.map?.getLayer("RouteString")) {
+      state.map.removeLayer("RouteString");
+      state.map.removeSource("RouteString");
+    }
+    state.map?.addSource("RouteString", sourceDate);
+
+    state.map?.addLayer({
+      id: "RouteString",
+      type: "line",
+      source: "RouteString",
+      layout: {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+      paint: {
+        "line-color": "black",
+        "line-width": 3,
+      },
+    });
+  };
   return (
     <MapsContext.Provider value={{ ...state, setMap, getRouteBetweenPoints }}>
       {children}

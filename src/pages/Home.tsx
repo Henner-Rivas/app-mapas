@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { BtnMyLocation, MapView, SearchBar } from "../Components";
 import ReactLogo from "../Components/ReactLogo";
 

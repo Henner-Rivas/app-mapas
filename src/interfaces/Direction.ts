@@ -1,39 +1,42 @@
 export interface DirecctionResponse {
-  type: string;
-  query: number[];
-  features: Feature[];
-  attribution: string;
+  routes: Route[];
+  waypoints: Waypoint[];
+  code: string;
+  uuid: string;
 }
 
-export interface Feature {
-  id: string;
-  type: string;
-  place_type: string[];
-  relevance: number;
-  properties: Properties;
-  text_es: string;
-  place_name_es: string;
-  text: string;
-  place_name: string;
-  bbox: number[];
-  center: number[];
+export interface Route {
+  country_crossed: boolean;
+  weight_name: string;
+  weight: number;
+  duration: number;
+  distance: number;
+  legs: Leg[];
   geometry: Geometry;
-  context: Context[];
-}
-
-export interface Context {
-  id: string;
-  wikidata: string;
-  text_es: string;
-  language_es: string;
-  text: string;
-  language: string;
-  short_code?: string;
 }
 
 export interface Geometry {
+  coordinates: Array<number[]>;
   type: string;
-  coordinates: number[];
 }
 
-export interface Properties {}
+export interface Leg {
+  via_waypoints: any[];
+  admins: Admin[];
+  weight: number;
+  duration: number;
+  steps: any[];
+  distance: number;
+  summary: string;
+}
+
+export interface Admin {
+  iso_3166_1_alpha3: string;
+  iso_3166_1: string;
+}
+
+export interface Waypoint {
+  distance: number;
+  name: string;
+  location: number[];
+}

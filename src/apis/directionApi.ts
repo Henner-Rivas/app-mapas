@@ -4,7 +4,8 @@ export const directionApi = axios.create({
   params: {
     alternatives: false,
     geometries: "geojson",
-    geojson: "es",
+    language: "es",
+
     steps: false,
     overview: "simplified",
     access_token:
