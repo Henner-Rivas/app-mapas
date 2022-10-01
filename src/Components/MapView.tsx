@@ -21,6 +21,7 @@ export const MapView = () => {
       }); */
       setMap(map);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, userLocation]);
 
   if (isLoading) {
