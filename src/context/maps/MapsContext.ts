@@ -4,7 +4,10 @@ import { createContext } from "react";
 interface MapsContextProps {
   isMapReady: boolean;
   map?: Map;
-
+  getRouteBetweenPoints: (
+    start: [number, number],
+    end: [number, number]
+  ) => Promise<void>;
   //methos
 
   setMap: (map: Map) => void;
